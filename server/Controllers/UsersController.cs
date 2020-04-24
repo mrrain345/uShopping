@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using uShopping.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System;
 
 namespace uShopping.Controllers {
 
@@ -15,12 +16,12 @@ namespace uShopping.Controllers {
     }
 
     [HttpGet]
-    public DbSet<Users> GetAll() {
+    public DbSet<User> GetAll() {
       return db.Users;
     }
 
     [HttpGet("{id}")]
-    public ActionResult<Users> Get(int id) {
+    public ActionResult<User> Get(Guid id) {
       var usr = from user in db.Users where user.Id == id select user;
 
       if (usr.Count() != 1) return NotFound();
@@ -28,7 +29,7 @@ namespace uShopping.Controllers {
     }
 
     [HttpPost]
-    public string Post([FromBody] Users user) {
+    public string Post([FromBody] User user) {
       return user.Username;
     }
   }
