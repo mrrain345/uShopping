@@ -16,7 +16,7 @@ namespace uShopping.Models
         }
 
         public virtual DbSet<ListMember> ListMembers { get; set; }
-        public virtual DbSet<ProductList> Lists { get; set; }
+        public virtual DbSet<ProductList> ProductLists { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Session> Sessions { get; set; }
         public virtual DbSet<User> Users { get; set; }
