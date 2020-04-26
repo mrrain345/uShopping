@@ -25,5 +25,27 @@ namespace uShopping.Controllers {
 
         return db.ProductLists.Join(listMembers, pl => pl.Id, lm => lm.ListId, (pl, lm) => pl).ToArray();
     }
+
+    [HttpPost]
+    public ActionResult<ProductListData> Post([FromBody] TitleData data, [FromHeader] Guid authorization) {
+        var session = db.Sessions.SingleOrDefault(s => s.SessId == authorization);
+        if(session == null) return NotFound();
+
+        var productList = new ProductList {
+            Id = Guid.NewGuid(),
+            Title = data.Title
+        };
+        db.ProductLists.Add(productList);
+
+        var listMember = new ListMember {
+            UserId = session.UserId,
+            ListId = productList.Id
+        };
+
+        db.ListMembers.Add(listMember);
+        db.SaveChanges();
+
+        return new ProductListData(productList);
+    }
   }
 }
