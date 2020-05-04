@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Proxies;
 using uShopping.Models;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
@@ -30,7 +31,9 @@ namespace uShopping
         {
             var sqlConnectionString = Configuration.GetConnectionString("DBContext");
             services.AddDbContext<DBContext>(
-              options => options.UseMySql(sqlConnectionString, x => x.ServerVersion("10.1.41-mariadb"))
+              options => options
+                .UseLazyLoadingProxies()
+                .UseMySql(sqlConnectionString, x => x.ServerVersion("10.1.41-mariadb"))
             );
             services.AddControllers();
         }

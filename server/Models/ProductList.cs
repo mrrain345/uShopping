@@ -7,6 +7,7 @@ namespace uShopping.Models
     {
         public ProductList()
         {
+            ListMembers = new HashSet<ListMember>();
             Products = new HashSet<Product>();
         }
 
@@ -14,7 +15,7 @@ namespace uShopping.Models
         public string Title { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public virtual ListMember ListMember { get; set; }
+        public virtual ICollection<ListMember> ListMembers { get; set; }
         public virtual ICollection<Product> Products { get; set; }
     }
 }

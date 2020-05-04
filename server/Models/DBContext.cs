@@ -1,25 +1,22 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Proxies;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace uShopping.Models
 {
     public partial class DBContext : DbContext
     {
-        public DBContext()
-        {
-        }
+        public DBContext() {}
 
         public DBContext(DbContextOptions<DBContext> options)
-            : base(options)
-        {
-        }
+            : base(options) {}
 
         public virtual DbSet<ListMember> ListMembers { get; set; }
         public virtual DbSet<ProductList> ProductLists { get; set; }
         public virtual DbSet<Product> Products { get; set; }
-        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Session> Sessions { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,12 +24,10 @@ namespace uShopping.Models
             {
                 entity.ToTable("ListMembers");
                 entity.HasIndex(e => e.ListId)
-                    .HasName("ListMembers_list_id_IDX")
-                    .IsUnique();
+                    .HasName("ListMembers_FK_1");
 
                 entity.HasIndex(e => e.UserId)
-                    .HasName("ListMembers_user_id_IDX")
-                    .IsUnique();
+                    .HasName("ListMembers_FK");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -55,13 +50,15 @@ namespace uShopping.Models
                     .HasCollation("ascii_general_ci");
 
                 entity.HasOne(d => d.ProductList)
-                    .WithOne(p => p.ListMember)
-                    .HasForeignKey<ListMember>(d => d.ListId)
+                    .WithMany(p => p.ListMembers)
+                    .HasForeignKey(d => d.ListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("ListMembers_FK_1");
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.ListMember)
-                    .HasForeignKey<ListMember>(d => d.UserId)
+                    .WithMany(p => p.ListMembers)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("ListMembers_FK");
             });
 
@@ -126,6 +123,39 @@ namespace uShopping.Models
                     .HasConstraintName("Products_FK");
             });
 
+            modelBuilder.Entity<Session>(entity =>
+            {
+                entity.ToTable("Sessions");
+                entity.HasKey(e => e.SessId)
+                    .HasName("PRIMARY");
+
+                entity.HasIndex(e => e.UserId)
+                    .HasName("Sessions_user_id_IDX");
+
+                entity.Property(e => e.SessId)
+                    .HasColumnName("sess_id")
+                    .HasColumnType("varchar(36)")
+                    .HasCharSet("ascii")
+                    .HasCollation("ascii_general_ci");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasColumnType("timestamp")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("user_id")
+                    .HasColumnType("varchar(36)")
+                    .HasCharSet("ascii")
+                    .HasCollation("ascii_general_ci");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Sessions)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("Sessions_FK");
+            });
+
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("Users");
@@ -159,34 +189,6 @@ namespace uShopping.Models
                     .HasColumnType("varchar(80)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_general_ci");
-            });
-
-            modelBuilder.Entity<Session>(entity =>
-            {
-                entity.ToTable("Sessions");
-                entity.HasKey(e => e.SessId)
-                    .HasName("PRIMARY");
-
-                entity.HasIndex(e => e.UserId)
-                    .HasName("Sessions_user_id_IDX");
-
-                entity.Property(e => e.SessId)
-                    .HasColumnName("sess_id")
-                    .HasColumnType("varchar(36)")
-                    .HasCharSet("ascii")
-                    .HasCollation("ascii_general_ci");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnName("created_at")
-                    .HasColumnType("timestamp")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasColumnName("user_id")
-                    .HasColumnType("varchar(36)")
-                    .HasCharSet("ascii")
-                    .HasCollation("ascii_general_ci");
             });
 
             OnModelCreatingPartial(modelBuilder);

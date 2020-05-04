@@ -7,6 +7,7 @@ namespace uShopping.Models
     {
         public User()
         {
+            ListMembers = new HashSet<ListMember>();
             Sessions = new HashSet<Session>();
         }
 
@@ -15,7 +16,7 @@ namespace uShopping.Models
         public string Password { get; set; }
         public string Email { get; set; }
 
-        public virtual ListMember ListMember { get; set; }
+        public virtual ICollection<ListMember> ListMembers { get; set; }
         public virtual ICollection<Session> Sessions { get; set; }
     }
 }

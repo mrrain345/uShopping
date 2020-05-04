@@ -16,14 +16,12 @@ namespace uShopping.Controllers {
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable <ProductList>> Get([FromHeader] Guid authorization) {
+    public ActionResult<IEnumerable <ProductListData>> Get([FromHeader] Guid authorization) {
+        User user = Session.GetUser(db, authorization);
+        if (user == null) return NotFound();
 
-        var session = db.Sessions.SingleOrDefault(s => s.SessId == authorization);
-        if(session == null) return NotFound();
-
-        var listMembers = db.ListMembers.Where(lm => lm.UserId == session.UserId);
-
-        return db.ProductLists.Join(listMembers, pl => pl.Id, lm => lm.ListId, (pl, lm) => pl).ToArray();
+        var productLists = user.ListMembers.Select(lm => new ProductListData(lm.ProductList));
+        return Ok(productLists);
     }
 
     [HttpPost]
