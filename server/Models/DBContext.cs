@@ -18,16 +18,14 @@ namespace uShopping.Models
         public virtual DbSet<ListMember> ListMembers { get; set; }
         public virtual DbSet<ProductList> ProductLists { get; set; }
         public virtual DbSet<Product> Products { get; set; }
-        public virtual DbSet<Session> Sessions { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Session> Sessions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ListMember>(entity =>
             {
                 entity.ToTable("ListMembers");
-                entity.HasNoKey();
-
                 entity.HasIndex(e => e.ListId)
                     .HasName("ListMembers_list_id_IDX")
                     .IsUnique();
@@ -35,6 +33,12 @@ namespace uShopping.Models
                 entity.HasIndex(e => e.UserId)
                     .HasName("ListMembers_user_id_IDX")
                     .IsUnique();
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("varchar(36)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_general_ci");
 
                 entity.Property(e => e.ListId)
                     .IsRequired()
@@ -51,12 +55,12 @@ namespace uShopping.Models
                     .HasCollation("ascii_general_ci");
 
                 entity.HasOne(d => d.ProductList)
-                    .WithOne()
+                    .WithOne(p => p.ListMember)
                     .HasForeignKey<ListMember>(d => d.ListId)
                     .HasConstraintName("ListMembers_FK_1");
 
                 entity.HasOne(d => d.User)
-                    .WithOne()
+                    .WithOne(p => p.ListMember)
                     .HasForeignKey<ListMember>(d => d.UserId)
                     .HasConstraintName("ListMembers_FK");
             });
@@ -122,34 +126,6 @@ namespace uShopping.Models
                     .HasConstraintName("Products_FK");
             });
 
-            modelBuilder.Entity<Session>(entity =>
-            {
-                entity.ToTable("Sessions");
-                entity.HasKey(e => e.SessId)
-                    .HasName("PRIMARY");
-
-                entity.HasIndex(e => e.UserId)
-                    .HasName("Sessions_user_id_IDX");
-
-                entity.Property(e => e.SessId)
-                    .HasColumnName("sess_id")
-                    .HasColumnType("varchar(36)")
-                    .HasCharSet("ascii")
-                    .HasCollation("ascii_general_ci");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnName("created_at")
-                    .HasColumnType("timestamp")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasColumnName("user_id")
-                    .HasColumnType("varchar(36)")
-                    .HasCharSet("ascii")
-                    .HasCollation("ascii_general_ci");
-            });
-
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("Users");
@@ -183,6 +159,34 @@ namespace uShopping.Models
                     .HasColumnType("varchar(80)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_general_ci");
+            });
+
+            modelBuilder.Entity<Session>(entity =>
+            {
+                entity.ToTable("Sessions");
+                entity.HasKey(e => e.SessId)
+                    .HasName("PRIMARY");
+
+                entity.HasIndex(e => e.UserId)
+                    .HasName("Sessions_user_id_IDX");
+
+                entity.Property(e => e.SessId)
+                    .HasColumnName("sess_id")
+                    .HasColumnType("varchar(36)")
+                    .HasCharSet("ascii")
+                    .HasCollation("ascii_general_ci");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasColumnType("timestamp")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("user_id")
+                    .HasColumnType("varchar(36)")
+                    .HasCharSet("ascii")
+                    .HasCollation("ascii_general_ci");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -38,6 +38,7 @@ namespace uShopping.Controllers {
         db.ProductLists.Add(productList);
 
         var listMember = new ListMember {
+            Id = Guid.NewGuid(),
             UserId = session.UserId,
             ListId = productList.Id
         };

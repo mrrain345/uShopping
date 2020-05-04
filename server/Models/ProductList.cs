@@ -14,6 +14,7 @@ namespace uShopping.Models
         public string Title { get; set; }
         public DateTime CreatedAt { get; set; }
 
+        public virtual ListMember ListMember { get; set; }
         public virtual ICollection<Product> Products { get; set; }
     }
 }
