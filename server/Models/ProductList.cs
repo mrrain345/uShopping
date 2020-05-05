@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace uShopping.Models
 {
@@ -17,5 +18,9 @@ namespace uShopping.Models
 
         public virtual ICollection<ListMember> ListMembers { get; set; }
         public virtual ICollection<Product> Products { get; set; }
+
+        public Product GetProduct(Guid id) {
+          return Products.SingleOrDefault(p => p.Id == id);
+        }
     }
 }

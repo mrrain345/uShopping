@@ -20,7 +20,7 @@ namespace uShopping.Controllers {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        var productLists = user.ListMembers.Select(lm => new ProductListData(lm.ProductList));
+        var productLists = user.ProductLists.Select(pl => new ProductListData(pl));
         return Ok(productLists);
     }
     [HttpGet("{id}")]
@@ -28,10 +28,10 @@ namespace uShopping.Controllers {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == id);
-        if (listMember == null) return NotFound();
+        var productList = user.GetProductList(id);
+        if (productList == null) return NotFound();
 
-        return new ProductListData(listMember.ProductList);
+        return new ProductListData(productList);
     }
 
     [HttpPost]
@@ -50,10 +50,9 @@ namespace uShopping.Controllers {
             UserId = user.Id,
             ListId = productList.Id
         };
-
         db.ListMembers.Add(listMember);
+        
         db.SaveChanges();
-
         return new ProductListData(productList);
     }
 
@@ -62,13 +61,12 @@ namespace uShopping.Controllers {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == id);
-        if (listMember == null) return NotFound();
-        var productList = listMember.ProductList;
+        var productList = user.GetProductList(id);
+        if (productList == null) NotFound();
         
         if (body.Title != null) productList.Title = body.Title;
-        db.SaveChanges();
 
+        db.SaveChanges();
         return new ProductListData(productList);
     }
 
@@ -77,17 +75,13 @@ namespace uShopping.Controllers {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == id);
-        if (listMember == null) return NotFound();
-        var productList = listMember.ProductList;
+        var productList = user.GetProductList(id);
+        if (productList == null) NotFound();
 
-        foreach(var lm in productList.ListMembers) {
-            db.ListMembers.Remove(lm);
-        }
+        foreach(var lm in productList.ListMembers) db.ListMembers.Remove(lm);
         db.ProductLists.Remove(productList);
 
         db.SaveChanges();
-
         return new ProductListIdData(productList);
     }
   }

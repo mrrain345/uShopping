@@ -15,10 +15,10 @@ namespace uShopping.Controllers {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == listId);
-        if (listMember == null) return NotFound();
+        var productList = user.GetProductList(listId);
+        if (productList == null) NotFound();
 
-        var products = listMember.ProductList.Products.Select(p => new ProductData(p));
+        var products = productList.Products.Select(p => new ProductData(p));
         return Ok(products);
     }
 
@@ -27,8 +27,7 @@ namespace uShopping.Controllers {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == listId);
-        if (listMember == null) return NotFound();
+        if (user.HasProductList(listId)) return NotFound();
 
         var product = new Product {
             Id = Guid.NewGuid(),
@@ -44,15 +43,13 @@ namespace uShopping.Controllers {
         return new ProductData(product);
     }
 
-        [HttpPatch("{listId}/products/{id}")]
+    [HttpPatch("{listId}/products/{id}")]
     public ActionResult<ProductData> PatchProduct(Guid listId, Guid id, [FromBody] ProductData body, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == listId);
-        if (listMember == null) return NotFound();
-
-        var product = listMember.ProductList.Products.SingleOrDefault(p => p.Id == id);
+        var product = user.GetProductList(listId)?.GetProduct(id);
+        if (product == null) NotFound();
 
         if (body.Name != null) product.Name = body.Name;
         if (body.Count != null) product.Count = body.Count.Value;
@@ -68,10 +65,8 @@ namespace uShopping.Controllers {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == listId);
-        if (listMember == null) return NotFound();
-
-        var product = listMember.ProductList.Products.SingleOrDefault(p => p.Id == id);
+        var product = user.GetProductList(listId)?.GetProduct(id);
+        if (product == null) return NotFound();
 
         db.Products.Remove(product);
 
