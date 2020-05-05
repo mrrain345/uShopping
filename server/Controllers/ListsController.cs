@@ -9,7 +9,7 @@ namespace uShopping.Controllers {
 
   [ApiController]
   [Route("[controller]")]
-  public class ListsController : Controller {
+  public partial class ListsController : Controller {
     private DBContext db;
     public ListsController(DBContext context) {
       this.db = context;
@@ -35,7 +35,7 @@ namespace uShopping.Controllers {
     }
 
     [HttpPost]
-    public ActionResult<ProductListData> Post([FromBody] ProductListData body, [FromHeader] Guid authorization) {
+    public ActionResult<ProductListData> PostList([FromBody] ProductListData body, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
@@ -65,8 +65,8 @@ namespace uShopping.Controllers {
         var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == id);
         if (listMember == null) return NotFound();
         var productList = listMember.ProductList;
-        productList.Title = body.Title;
-
+        
+        if (body.Title != null) productList.Title = body.Title;
         db.SaveChanges();
 
         return new ProductListData(productList);
@@ -80,11 +80,11 @@ namespace uShopping.Controllers {
         var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == id);
         if (listMember == null) return NotFound();
         var productList = listMember.ProductList;
-        db.ProductLists.Remove(productList);
 
         foreach(var lm in productList.ListMembers) {
             db.ListMembers.Remove(lm);
         }
+        db.ProductLists.Remove(productList);
 
         db.SaveChanges();
 

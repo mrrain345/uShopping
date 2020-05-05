@@ -96,7 +96,7 @@ namespace uShopping.Models
                     .HasCharSet("ascii")
                     .HasCollation("ascii_general_ci");
 
-                entity.Property(e => e.Active).HasColumnName("active");
+                entity.Property(e => e.IsPurchased).HasColumnName("is_purchased");
 
                 entity.Property(e => e.Count)
                     .HasColumnName("count")

@@ -9,7 +9,7 @@ namespace uShopping.Models
         public Guid ListId { get; set; }
         public string Name { get; set; }
         public int Count { get; set; }
-        public bool Active { get; set; }
+        public bool IsPurchased { get; set; }
 
         public virtual ProductList ProductList { get; set; }
     }
