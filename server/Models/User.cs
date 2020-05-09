@@ -20,8 +20,9 @@ namespace uShopping.Models
         public virtual ICollection<ListMember> ListMembers { get; set; }
         public virtual ICollection<Session> Sessions { get; set; }
 
-
-        public IEnumerable<ProductList> ProductLists => ListMembers.Select(lm => lm.ProductList);
+        public IEnumerable<ProductList> GetProductLists() {
+            return ListMembers.Select(lm => lm.ProductList);
+        }
 
         public ProductList GetProductList(Guid listId) {
             var listMember = ListMembers.SingleOrDefault(lm => lm.ListId == listId);

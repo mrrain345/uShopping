@@ -20,7 +20,7 @@ namespace uShopping.Controllers {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        var productLists = user.ProductLists.Select(pl => new ProductListData(pl));
+        var productLists = user.GetProductLists().Select(pl => new ProductListData(pl));
         return Ok(productLists);
     }
     [HttpGet("{id}")]
