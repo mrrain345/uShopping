@@ -27,7 +27,7 @@ namespace uShopping.Controllers {
         User user = Session.GetUser(db, authorization);
         if (user == null) return NotFound();
 
-        if (user.HasProductList(listId)) return NotFound();
+        if (!user.HasProductList(listId)) return NotFound();
 
         var product = new Product {
             Id = Guid.NewGuid(),
