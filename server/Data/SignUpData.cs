@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace uShopping.Data {
   public class SignUpData {
@@ -14,7 +15,7 @@ namespace uShopping.Data {
     [Required]
     public string Password { get; set; }
     
-    [Required]
+    [Required] [JsonPropertyName("confirm_password")]
     public string ConfirmPassword { get; set; }
   }
 }

@@ -143,6 +143,11 @@ namespace uShopping.Models
                     .HasColumnType("timestamp")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasColumnType("timestamp")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
                 entity.Property(e => e.UserId)
                     .IsRequired()
                     .HasColumnName("user_id")
