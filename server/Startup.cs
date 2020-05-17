@@ -19,6 +19,7 @@ namespace uShopping
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -36,10 +37,11 @@ namespace uShopping
                 .UseMySql(sqlConnectionString, x => x.ServerVersion("10.1.41-mariadb"))
             );
             services.AddControllers();
+            services.AddHostedService<DBCleanService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, DBContext db, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
