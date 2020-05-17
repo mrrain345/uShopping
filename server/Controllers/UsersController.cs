@@ -19,7 +19,7 @@ namespace uShopping.Controllers {
     [HttpGet("{id}")]
     public ActionResult<UserData> Get(Guid id) {
       var user = db.Users.SingleOrDefault(u => u.Id == id);
-      if (user == null) return NotFound();
+      if (user == null) return ErrorData.SessionError();
       return new UserData(user);
     }
 

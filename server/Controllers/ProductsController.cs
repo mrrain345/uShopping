@@ -13,7 +13,7 @@ namespace uShopping.Controllers {
     [HttpGet("{listId}/products")]
     public ActionResult<IEnumerable <ProductData>> GetProducts(Guid listId, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var productList = user.GetProductList(listId);
         if (productList == null) NotFound();
@@ -25,7 +25,7 @@ namespace uShopping.Controllers {
     [HttpPost("{listId}/products")]
     public ActionResult<ProductData> PostProduct(Guid listId, [FromBody] ProductData body, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         if (!user.HasProductList(listId)) return NotFound();
 
@@ -46,7 +46,7 @@ namespace uShopping.Controllers {
     [HttpPatch("{listId}/products/{id}")]
     public ActionResult<ProductData> PatchProduct(Guid listId, Guid id, [FromBody] ProductData body, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var product = user.GetProductList(listId)?.GetProduct(id);
         if (product == null) NotFound();
@@ -63,7 +63,7 @@ namespace uShopping.Controllers {
     [HttpDelete("{listId}/products/{id}")]
     public ActionResult<ProductIdData> DeleteProduct(Guid listId, Guid id, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var product = user.GetProductList(listId)?.GetProduct(id);
         if (product == null) return NotFound();

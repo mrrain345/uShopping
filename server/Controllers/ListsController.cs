@@ -18,7 +18,7 @@ namespace uShopping.Controllers {
     [HttpGet]
     public ActionResult<IEnumerable <ProductListData>> GetAll([FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var productLists = user.GetProductLists().Select(pl => new ProductListData(pl));
         return Ok(productLists);
@@ -26,7 +26,7 @@ namespace uShopping.Controllers {
     [HttpGet("{id}")]
     public ActionResult<ProductListData> GetOne(Guid id, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var productList = user.GetProductList(id);
         if (productList == null) return NotFound();
@@ -37,7 +37,7 @@ namespace uShopping.Controllers {
     [HttpPost]
     public ActionResult<ProductListData> PostList([FromBody] ProductListData body, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var productList = new ProductList {
             Id = Guid.NewGuid(),
@@ -59,7 +59,7 @@ namespace uShopping.Controllers {
     [HttpPatch("{id}")]
     public ActionResult<ProductListData> Patch(Guid id, [FromBody] ProductListData body, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var productList = user.GetProductList(id);
         if (productList == null) NotFound();
@@ -73,7 +73,7 @@ namespace uShopping.Controllers {
     [HttpDelete("{id}")]
     public ActionResult<ProductListIdData> Delete(Guid id, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var productList = user.GetProductList(id);
         if (productList == null) NotFound();

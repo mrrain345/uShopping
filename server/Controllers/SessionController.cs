@@ -30,7 +30,7 @@ namespace uShopping.Controllers {
     [HttpPost]
     public ActionResult<SessionPostData> Post([FromBody] LoginData data) {
         var user = db.Users.SingleOrDefault((u => u.Email == data.Email));
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
         if (!Session.PasswordVerify(data.Password, user.Password)) return NotFound();
         
         Session session = new Session {

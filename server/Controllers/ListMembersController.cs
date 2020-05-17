@@ -13,7 +13,7 @@ namespace uShopping.Controllers {
     [HttpGet("{listId}/users")]
     public ActionResult<IEnumerable <UserData>> GetUsers(Guid listId, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == listId);
         if (listMember == null) return NotFound();
@@ -26,7 +26,7 @@ namespace uShopping.Controllers {
     [HttpPost("{listId}/users")]
     public ActionResult<UserData> PostListMember(Guid listId, [FromBody] UserData body, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
-        if (user == null) return NotFound();
+        if (user == null) return ErrorData.SessionError();
 
         var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == listId);
         if (listMember == null) return NotFound();
