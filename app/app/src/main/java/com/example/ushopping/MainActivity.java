@@ -35,7 +35,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class ProductListsActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     Retrofit api;
     ListAdapter listAdapter;
@@ -44,7 +44,7 @@ public class ProductListsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_lists);
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -53,30 +53,22 @@ public class ProductListsActivity extends AppCompatActivity {
         btn_addList.hide();
         api = APIContext.getContext();
 
-        listAdapter = new ListAdapter(this, R.layout.adapter_view_list, new ArrayList<ListData>());
+        listAdapter = new ListAdapter(this, R.layout.adapter_main_list, new ArrayList<ListData>());
         listView.setAdapter(listAdapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ListData list = listAdapter.getItem(position);
-                Intent intent = new Intent(ProductListsActivity.this, AddProductActivity.class);
-                intent.putExtra("list_id", list.id.toString());
-                intent.putExtra("list_title", list.title);
-                intent.putExtra("list_date", list.created_at.getTime());
-                startActivity(intent);
-            }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            ListData list = listAdapter.getItem(position);
+            Intent intent = new Intent(MainActivity.this, ProductListActivity.class);
+            intent.putExtra("list_id", list.id.toString());
+            intent.putExtra("list_title", list.title);
+            intent.putExtra("list_date", list.created_at.getTime());
+            startActivity(intent);
         });
 
-        View view = findViewById(R.id.listView);
+        refreshList();
 
-        refreshList(view);
-
-        btn_addList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                productDialogBuilder(view).show();
-            }
+        btn_addList.setOnClickListener(view -> {
+            productDialogBuilder(view).show();
         });
     }
 
@@ -86,43 +78,46 @@ public class ProductListsActivity extends AppCompatActivity {
         builder.setTitle("Add new list");
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String title = input.getText().toString();
-                ListSendData lsd = new ListSendData(title);
-                ProductListsApi productList = api.create(ProductListsApi.class);
-                Call<ListData> listCall = productList.post(authorisation, lsd);
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            String title = input.getText().toString();
+            ListSendData lsd = new ListSendData(title);
+            ProductListsApi productList = api.create(ProductListsApi.class);
+            Call<ListData> listCall = productList.post(authorisation, lsd);
 
-                listCall.enqueue(new Callback<ListData>() {
-                    @Override
-                    public void onResponse(Call<ListData> call, Response<ListData> response) {
-                        if (ErrorData.show(response, view)) return;
+            listCall.enqueue(new Callback<ListData>() {
+                @Override
+                public void onResponse(Call<ListData> call, Response<ListData> response) {
+                    if (ErrorData.show(response, view)) return;
 
-                        ListData list = response.body();
-                        Snackbar.make(view, "Created list: " + list.title, Snackbar.LENGTH_LONG).show();
+                    ListData list = response.body();
+                    Snackbar.make(view, "Created list: " + list.title, Snackbar.LENGTH_LONG).show();
 
-                        ListData create = new ListData(list.title, list.created_at, list.id);
-                        listAdapter.insert(create, 0);
-                    }
+                    ListData create = new ListData(list.title, list.created_at, list.id);
+                    listAdapter.insert(create, 0);
+                }
 
-                    @Override
-                    public void onFailure(Call<ListData> call, Throwable t) {
-                        Log.wtf("API_TEST", t);
-                        t.printStackTrace();
-                    }
-                });
-            }
+                @Override
+                public void onFailure(Call<ListData> call, Throwable t) {
+                    Log.wtf("RETROFIT", t);
+                    Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
+            });
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {}
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> {});
 
         return builder;
     }
 
-    void refreshList(View view) {
+    void refreshList() {
+        View view = findViewById(R.id.listView);
+        listAdapter.clear();
+
+        ProgressBar waiting = findViewById(R.id.waiting);
+        waiting.setVisibility(View.VISIBLE);
+
+        FloatingActionButton btn_addList = findViewById(R.id.btn_addList);
+        btn_addList.hide();
+
         ProductListsApi productList = api.create(ProductListsApi.class);
         Call<List<ListData>> listCall = productList.getAll(authorisation);
 
@@ -139,37 +134,36 @@ public class ProductListsActivity extends AppCompatActivity {
                     listAdapter.sort((a, b) -> b.created_at.compareTo(a.created_at));
                 }
 
-                ProgressBar waiting = findViewById(R.id.waiting);
-                waiting.setVisibility(view.GONE);
-
-                FloatingActionButton btn_addList = findViewById(R.id.btn_addList);
+                waiting.setVisibility(View.GONE);
                 btn_addList.show();
             }
 
             @Override
             public void onFailure(Call<List<ListData>> call, Throwable t) {
-                Log.wtf("API_TEST", t);
-                t.printStackTrace();
+                Log.wtf("RETROFIT", t);
+                Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
+                ProgressBar waiting = findViewById(R.id.waiting);
+                waiting.setVisibility(view.GONE);
             }
         });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_refresh) {
+            refreshList();
+            return true;
+        }
+
+        if (id == R.id.action_logout) {
             return true;
         }
 

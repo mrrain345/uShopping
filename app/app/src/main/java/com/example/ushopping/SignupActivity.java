@@ -80,8 +80,8 @@ public class SignupActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<UserData> call, Throwable t) {
-                Log.d("API_TEST", "EXCEPTION: " + t.getMessage());
-                t.printStackTrace();
+                Log.wtf("RETROFIT", t);
+                Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
     }
