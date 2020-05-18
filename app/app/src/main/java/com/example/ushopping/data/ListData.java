@@ -1,16 +1,19 @@
 package com.example.ushopping.data;
 
+import java.util.Date;
+import java.util.UUID;
+
 public class ListData {
 
     public String title;
-    public String createdAt;
-    public int id;
+    public Date created_at;
+    public UUID id;
 
     public ListData(){}
 
-    public ListData(String title, String createdAt, int id) {
+    public ListData(String title, Date createdAt, UUID id) {
         this.title = title;
-        this.createdAt = createdAt;
+        this.created_at = createdAt;
         this.id = id;
     }
 
@@ -18,11 +21,11 @@ public class ListData {
         return title;
     }
 
-    public String getDate() {
-        return createdAt;
+    public Date getDate() {
+        return created_at;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -30,11 +33,11 @@ public class ListData {
         this.title = title;
     }
 
-    public void setDate(String date) {
-        this.createdAt = date;
+    public void setDate(Date date) {
+        this.created_at = date;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 }

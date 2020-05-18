@@ -2,8 +2,12 @@ package com.example.ushopping.api;
 
 import com.example.ushopping.data.ErrorData;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -17,11 +21,21 @@ public class APIContext {
 
     public static Retrofit getContext() {
         if (api == null) {
+            Gson gson = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                    .create();
+
             api = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         }
         return api;
+    }
+
+    public static String formatDate(Date date) {
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy' 'HH:mm:ss");
+        format.setTimeZone(TimeZone.getDefault());
+        return format.format(date);
     }
 }

@@ -7,6 +7,7 @@ import com.example.ushopping.data.ErrorData;
 import com.example.ushopping.data.SignUpData;
 import com.example.ushopping.data.UserData;
 import com.example.ushopping.api.UsersAPI;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,7 +63,7 @@ public class SignupActivity extends AppCompatActivity {
         data.username = username.getText().toString();
         data.email = email.getText().toString();
         data.password = password.getText().toString();
-        data.confirmpassword = cpassword.getText().toString();
+        data.confirm_password = cpassword.getText().toString();
 
         UsersAPI users = api.create(UsersAPI.class);
         Call<UserData> userCall = users.post(data);
@@ -69,19 +71,16 @@ public class SignupActivity extends AppCompatActivity {
         userCall.enqueue(new Callback<UserData>() {
             @Override
             public void onResponse(Call<UserData> call, Response<UserData> response) {
-                ErrorData error = ErrorData.getError(response);
+                if (ErrorData.show(response, view)) return;
 
-                if (error == null) {
-                    UserData user = response.body();
-                    Log.d("API_TEST", "createAccount: id: " + user.id + ", username: " + user.username);
-                } else {
-                    Log.d("API_TEST", "createAccount: ERROR status: " + error.status + ", code: " + error.code + ", message: " + error.title);
-                }
+                UserData user = response.body();
+                Log.d("API_TEST", "createAccount: id: " + user.id + ", username: " + user.username);
+                Snackbar.make(view, "Account created", Snackbar.LENGTH_LONG).show();
             }
 
             @Override
             public void onFailure(Call<UserData> call, Throwable t) {
-                Log.d("API_TEST", "createAccount: EXCEPTION: " + t.getMessage());
+                Log.d("API_TEST", "EXCEPTION: " + t.getMessage());
                 t.printStackTrace();
             }
         });

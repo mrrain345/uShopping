@@ -1,4 +1,4 @@
-package com.example.ushopping.data;
+package com.example.ushopping;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,9 +8,13 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.ushopping.R;
+import com.example.ushopping.api.APIContext;
+import com.example.ushopping.data.ListData;
 
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.UUID;
 
 public class ListAdapter extends ArrayAdapter<ListData> {
 
@@ -25,8 +29,8 @@ public class ListAdapter extends ArrayAdapter<ListData> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         String title = getItem(position).getTitle();
-        String date = getItem(position).getDate();
-        int id = getItem(position).getId();
+        Date date = getItem(position).getDate();
+        UUID id = getItem(position).getId();
 
         ListData list = new ListData(title, date, id);
         LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -36,7 +40,7 @@ public class ListAdapter extends ArrayAdapter<ListData> {
         TextView tvdate = (TextView) convertView.findViewById(R.id.secondLine);
 
         tvtitle.setText(title);
-        tvdate.setText(date);
+        tvdate.setText(APIContext.formatDate(date));
 
         return convertView;
     }
