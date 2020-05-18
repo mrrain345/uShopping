@@ -2,6 +2,7 @@ package com.example.ushopping;
 
 import android.os.Bundle;
 
+import com.example.ushopping.api.APICall;
 import com.example.ushopping.api.APIContext;
 import com.example.ushopping.data.ErrorData;
 import com.example.ushopping.data.SignUpData;
@@ -68,22 +69,10 @@ public class SignupActivity extends AppCompatActivity {
         UsersAPI users = api.create(UsersAPI.class);
         Call<UserData> userCall = users.post(data);
 
-        userCall.enqueue(new Callback<UserData>() {
-            @Override
-            public void onResponse(Call<UserData> call, Response<UserData> response) {
-                if (ErrorData.show(response, view)) return;
-
-                UserData user = response.body();
-                Log.d("API_TEST", "createAccount: id: " + user.id + ", username: " + user.username);
-                Snackbar.make(view, "Account created", Snackbar.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFailure(Call<UserData> call, Throwable t) {
-                Log.wtf("RETROFIT", t);
-                Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-        });
+        APICall.makeCall(view, userCall, res -> {
+            Log.d("API_TEST", "createAccount: id: " + res.id + ", username: " + res.username);
+            Snackbar.make(view, "Account created", Snackbar.LENGTH_LONG).show();
+        }).call();
     }
 
 }

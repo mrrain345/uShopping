@@ -3,6 +3,7 @@ package com.example.ushopping;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.ushopping.api.APICall;
 import com.example.ushopping.api.APIContext;
 import com.example.ushopping.api.ProductListsAPI;
 import com.example.ushopping.data.ErrorData;
@@ -82,24 +83,13 @@ public class MainActivity extends AppCompatActivity {
             ProductListsAPI productList = api.create(ProductListsAPI.class);
             Call<ProductListData> listCall = productList.post(lsd, authorisation);
 
-            listCall.enqueue(new Callback<ProductListData>() {
-                @Override
-                public void onResponse(Call<ProductListData> call, Response<ProductListData> response) {
-                    if (ErrorData.show(response, view)) return;
+            APICall.makeCall(view, listCall, data -> {
+                Snackbar.make(view, "Created list: " + data.title, Snackbar.LENGTH_LONG).show();
 
-                    ProductListData list = response.body();
-                    Snackbar.make(view, "Created list: " + list.title, Snackbar.LENGTH_LONG).show();
+                ProductListData create = new ProductListData(data.id, data.title, data.createdAt);
+                listAdapter.insert(create, 0);
 
-                    ProductListData create = new ProductListData(list.id, list.title, list.createdAt);
-                    listAdapter.insert(create, 0);
-                }
-
-                @Override
-                public void onFailure(Call<ProductListData> call, Throwable t) {
-                    Log.wtf("RETROFIT", t);
-                    Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-            });
+            }).call();
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> {});
 
@@ -119,30 +109,21 @@ public class MainActivity extends AppCompatActivity {
         ProductListsAPI productList = api.create(ProductListsAPI.class);
         Call<List<ProductListData>> listCall = productList.getAll(authorisation);
 
-        listCall.enqueue(new Callback<List<ProductListData>>() {
-            @Override
-            public void onResponse(Call<List<ProductListData>> call, Response<List<ProductListData>> response) {
-                if (ErrorData.show(response, view)) return;
-
-                List<ProductListData> lists = response.body();
-
-                for (ProductListData list : lists) {
-                    listAdapter.add(list);
-                    listAdapter.sort((a, b) -> b.createdAt.compareTo(a.createdAt));
-                }
-
-                waiting.setVisibility(View.GONE);
-                btn_addList.show();
+        APICall.makeCall(view, listCall, data -> {
+            for (ProductListData list : data) {
+                listAdapter.add(list);
+                listAdapter.sort((a, b) -> b.createdAt.compareTo(a.createdAt));
             }
 
-            @Override
-            public void onFailure(Call<List<ProductListData>> call, Throwable t) {
-                Log.wtf("RETROFIT", t);
-                Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
-                ProgressBar waiting = findViewById(R.id.waiting);
-                waiting.setVisibility(view.GONE);
-            }
-        });
+            waiting.setVisibility(View.GONE);
+            btn_addList.show();
+
+        }).exception(t -> {
+            Log.wtf("RETROFIT", t);
+            Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
+            waiting.setVisibility(view.GONE);
+
+        }).call();
     }
 
     @Override
