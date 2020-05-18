@@ -1,12 +1,14 @@
 package com.example.ushopping;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -14,13 +16,17 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.ushopping.data.ProductData;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
 public class ProductListActivity extends AppCompatActivity {
 
+    ListView productsListView;
+    com.example.ushopping.ProductListAdapter productListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,11 +41,20 @@ public class ProductListActivity extends AppCompatActivity {
         Date created_at = new Date(extras.getLong("list_date"));
         getSupportActionBar().setTitle(title);
 
-        ListView productsListView = findViewById(R.id.lv_addedproduct);
+
+
+        productsListView = findViewById(R.id.lv_addedproduct);
         FloatingActionButton add_product = findViewById(R.id.btn_addproduct);
         EditText input_product = new EditText(this);
         EditText input_quantity = new EditText(this);
 
+
+        ImageButton btn_menu = findViewById(R.id.btn_menu);
+        productListAdapter = new com.example.ushopping.ProductListAdapter(this, R.layout.adapter_product, new ArrayList<ProductData>());
+        productsListView.setAdapter(productListAdapter);
+        productListAdapter.add(new ProductData("abc",1));
+        productListAdapter.add(new ProductData("def",2));
+        productListAdapter.add(new ProductData("ghj",3));
         // TODO: load products
 
         add_product.setOnClickListener(view ->  {
@@ -50,6 +65,7 @@ public class ProductListActivity extends AppCompatActivity {
     AlertDialog.Builder productDialogBuilder(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add new item");
+
 
         Context context = view.getContext();
         LinearLayout layout = new LinearLayout(context);
@@ -69,9 +85,36 @@ public class ProductListActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Add", (dialog, which) -> {
             // TODO: add product to list
+            productListAdapter.add(new ProductData(name.getText().toString(), Integer.parseInt(count.getText().toString())));
+
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> {});
 
+        return builder;
+    }
+
+    AlertDialog.Builder menuButtonBuilder(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Product options");
+        Context context = view.getContext();
+
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        builder
+                .setPositiveButton("Change product name",(dialogInterface, i) -> {
+
+
+                })
+                .setNeutralButton("Change product quantity",(dialogInterface, i) -> {
+
+
+                })
+                .setNegativeButton("Delete product",(dialogInterface, i) -> {
+                    
+
+                })
+                .show();
         return builder;
     }
 

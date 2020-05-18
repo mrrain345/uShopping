@@ -8,8 +8,13 @@ public class ProductData {
     public UUID Id;
     public UUID listId;
     public String name;
-    public Intent count;
+    public Integer count;
     public Boolean isPurchased;
 
     public ProductData () {}
+    public ProductData(String name, Integer count) {
+        this.name = name;
+        this.count = count;
+    }
+
 }
