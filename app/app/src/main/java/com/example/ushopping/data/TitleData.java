@@ -2,14 +2,13 @@ package com.example.ushopping.data;
 
 import java.util.UUID;
 
-public class ListSendData {
+public class TitleData {
     public String title;
 
-    public ListSendData(){}
+    public TitleData() {}
 
-    public ListSendData(String title){
+    public TitleData(String title){
         this.title = title;
-
     }
 
 }

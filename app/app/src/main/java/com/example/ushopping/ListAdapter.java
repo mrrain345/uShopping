@@ -7,32 +7,31 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.ushopping.R;
 import com.example.ushopping.api.APIContext;
-import com.example.ushopping.data.ListData;
+import com.example.ushopping.data.ProductListData;
 
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-public class ListAdapter extends ArrayAdapter<ListData> {
+public class ListAdapter extends ArrayAdapter<ProductListData> {
 
     private Context mContext;
     int mResource;
 
-    public ListAdapter(Context context, int resource, ArrayList<ListData> objects){
+    public ListAdapter(Context context, int resource, ArrayList<ProductListData> objects){
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        String title = getItem(position).getTitle();
-        Date date = getItem(position).getDate();
-        UUID id = getItem(position).getId();
+        String title = getItem(position).title;
+        Date date = getItem(position).createdAt;
+        UUID id = getItem(position).id;
 
-        ListData list = new ListData(title, date, id);
+        ProductListData list = new ProductListData(id, title, date);
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
 

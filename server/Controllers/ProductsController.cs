@@ -61,7 +61,7 @@ namespace uShopping.Controllers {
     }
 
     [HttpDelete("{listId}/products/{id}")]
-    public ActionResult<ProductIdData> DeleteProduct(Guid listId, Guid id, [FromHeader] Guid authorization) {
+    public ActionResult<IdData> DeleteProduct(Guid listId, Guid id, [FromHeader] Guid authorization) {
         User user = Session.GetUser(db, authorization);
         if (user == null) return ErrorData.SessionError();
 
@@ -72,7 +72,7 @@ namespace uShopping.Controllers {
 
         db.SaveChanges();
 
-        return new ProductIdData(product);
+        return new IdData(product.Id);
     }
   }
 }

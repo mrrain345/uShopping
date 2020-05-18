@@ -1,14 +1,13 @@
 package com.example.ushopping;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.ushopping.api.APIContext;
 import com.example.ushopping.api.ProductListsApi;
 import com.example.ushopping.data.ErrorData;
-import com.example.ushopping.data.ListData;
-import com.example.ushopping.data.ListSendData;
+import com.example.ushopping.data.ProductListData;
+import com.example.ushopping.data.TitleData;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -21,7 +20,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -53,15 +51,15 @@ public class MainActivity extends AppCompatActivity {
         btn_addList.hide();
         api = APIContext.getContext();
 
-        listAdapter = new ListAdapter(this, R.layout.adapter_main_list, new ArrayList<ListData>());
+        listAdapter = new ListAdapter(this, R.layout.adapter_main_list, new ArrayList<ProductListData>());
         listView.setAdapter(listAdapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            ListData list = listAdapter.getItem(position);
+            ProductListData list = listAdapter.getItem(position);
             Intent intent = new Intent(MainActivity.this, ProductListActivity.class);
             intent.putExtra("list_id", list.id.toString());
             intent.putExtra("list_title", list.title);
-            intent.putExtra("list_date", list.created_at.getTime());
+            intent.putExtra("list_date", list.createdAt.getTime());
             startActivity(intent);
         });
 
@@ -80,24 +78,24 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(input);
         builder.setPositiveButton("Add", (dialog, which) -> {
             String title = input.getText().toString();
-            ListSendData lsd = new ListSendData(title);
+            TitleData lsd = new TitleData(title);
             ProductListsApi productList = api.create(ProductListsApi.class);
-            Call<ListData> listCall = productList.post(authorisation, lsd);
+            Call<ProductListData> listCall = productList.post(lsd, authorisation);
 
-            listCall.enqueue(new Callback<ListData>() {
+            listCall.enqueue(new Callback<ProductListData>() {
                 @Override
-                public void onResponse(Call<ListData> call, Response<ListData> response) {
+                public void onResponse(Call<ProductListData> call, Response<ProductListData> response) {
                     if (ErrorData.show(response, view)) return;
 
-                    ListData list = response.body();
+                    ProductListData list = response.body();
                     Snackbar.make(view, "Created list: " + list.title, Snackbar.LENGTH_LONG).show();
 
-                    ListData create = new ListData(list.title, list.created_at, list.id);
+                    ProductListData create = new ProductListData(list.id, list.title, list.createdAt);
                     listAdapter.insert(create, 0);
                 }
 
                 @Override
-                public void onFailure(Call<ListData> call, Throwable t) {
+                public void onFailure(Call<ProductListData> call, Throwable t) {
                     Log.wtf("RETROFIT", t);
                     Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
@@ -119,19 +117,18 @@ public class MainActivity extends AppCompatActivity {
         btn_addList.hide();
 
         ProductListsApi productList = api.create(ProductListsApi.class);
-        Call<List<ListData>> listCall = productList.getAll(authorisation);
+        Call<List<ProductListData>> listCall = productList.getAll(authorisation);
 
-        listCall.enqueue(new Callback<List<ListData>>() {
+        listCall.enqueue(new Callback<List<ProductListData>>() {
             @Override
-            public void onResponse(Call<List<ListData>> call, Response<List<ListData>> response) {
+            public void onResponse(Call<List<ProductListData>> call, Response<List<ProductListData>> response) {
                 if (ErrorData.show(response, view)) return;
 
-                List<ListData> lists = response.body();
+                List<ProductListData> lists = response.body();
 
-                for (ListData list : lists) {
-                    ListData item = new ListData(list.title, list.created_at, list.id);
-                    listAdapter.add(item);
-                    listAdapter.sort((a, b) -> b.created_at.compareTo(a.created_at));
+                for (ProductListData list : lists) {
+                    listAdapter.add(list);
+                    listAdapter.sort((a, b) -> b.createdAt.compareTo(a.createdAt));
                 }
 
                 waiting.setVisibility(View.GONE);
@@ -139,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<ListData>> call, Throwable t) {
+            public void onFailure(Call<List<ProductListData>> call, Throwable t) {
                 Log.wtf("RETROFIT", t);
                 Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
                 ProgressBar waiting = findViewById(R.id.waiting);

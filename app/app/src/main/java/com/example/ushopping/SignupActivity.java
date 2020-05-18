@@ -63,7 +63,7 @@ public class SignupActivity extends AppCompatActivity {
         data.username = username.getText().toString();
         data.email = email.getText().toString();
         data.password = password.getText().toString();
-        data.confirm_password = cpassword.getText().toString();
+        data.confirmPassword = cpassword.getText().toString();
 
         UsersAPI users = api.create(UsersAPI.class);
         Call<UserData> userCall = users.post(data);

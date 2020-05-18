@@ -20,6 +20,9 @@ namespace uShopping
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureKestrel(server => {
+                      server.ListenAnyIP(5000);
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }
