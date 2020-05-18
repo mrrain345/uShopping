@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.ushopping.api.APIContext;
-import com.example.ushopping.api.ProductListsApi;
+import com.example.ushopping.api.ProductListsAPI;
 import com.example.ushopping.data.ErrorData;
 import com.example.ushopping.data.ProductListData;
 import com.example.ushopping.data.TitleData;
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Add", (dialog, which) -> {
             String title = input.getText().toString();
             TitleData lsd = new TitleData(title);
-            ProductListsApi productList = api.create(ProductListsApi.class);
+            ProductListsAPI productList = api.create(ProductListsAPI.class);
             Call<ProductListData> listCall = productList.post(lsd, authorisation);
 
             listCall.enqueue(new Callback<ProductListData>() {
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton btn_addList = findViewById(R.id.btn_addList);
         btn_addList.hide();
 
-        ProductListsApi productList = api.create(ProductListsApi.class);
+        ProductListsAPI productList = api.create(ProductListsAPI.class);
         Call<List<ProductListData>> listCall = productList.getAll(authorisation);
 
         listCall.enqueue(new Callback<List<ProductListData>>() {
