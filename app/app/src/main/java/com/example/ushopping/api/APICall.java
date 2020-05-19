@@ -34,10 +34,6 @@ public class APICall <T> {
         return this;
     }
 
-    public static <T> APICall makeCall(View view, Call<T> restCall, APICallback<T> call) {
-        return new APICall(view, restCall, call);
-    }
-
     public void call() {
         restCall.enqueue(new Callback<T>() {
             @Override
@@ -45,7 +41,7 @@ public class APICall <T> {
                 ErrorData err = ErrorData.getError(response);
                 if (err == null) callback.onCall(response.body());
                 else if (error != null) error.onError(err);
-                else ErrorData.show(response, view);
+                else if (view != null) ErrorData.show(err, view);
             }
 
             @Override
@@ -53,7 +49,7 @@ public class APICall <T> {
                 if (exception != null) exception.onException(t);
                 else {
                     Log.wtf("RETROFIT", t);
-                    Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    if (view != null) Snackbar.make(view, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
             }
         });

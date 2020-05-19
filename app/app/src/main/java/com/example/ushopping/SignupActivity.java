@@ -1,10 +1,14 @@
 package com.example.ushopping;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.ushopping.api.APICall;
 import com.example.ushopping.api.APIContext;
+import com.example.ushopping.api.SessionAPI;
 import com.example.ushopping.data.ErrorData;
+import com.example.ushopping.data.LoginData;
+import com.example.ushopping.data.SessionPostData;
 import com.example.ushopping.data.SignUpData;
 import com.example.ushopping.data.UserData;
 import com.example.ushopping.api.UsersAPI;
@@ -19,6 +23,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,8 +50,6 @@ public class SignupActivity extends AppCompatActivity {
 
         email.setText(bundle.getString("email"));
         password.setText(bundle.getString("password"));
-
-        api = APIContext.getContext();
     }
 
     public boolean onOptionsItemSelected(MenuItem item){
@@ -66,12 +70,19 @@ public class SignupActivity extends AppCompatActivity {
         data.password = password.getText().toString();
         data.confirmPassword = cpassword.getText().toString();
 
-        UsersAPI users = api.create(UsersAPI.class);
+        UsersAPI users = APIContext.createAPI(UsersAPI.class);
         Call<UserData> userCall = users.post(data);
 
-        APICall.makeCall(view, userCall, res -> {
-            Log.d("API_TEST", "createAccount: id: " + res.id + ", username: " + res.username);
+        APIContext.makeCall(view, userCall, res -> {
             Snackbar.make(view, "Account created", Snackbar.LENGTH_LONG).show();
+
+            SessionAPI sessionAPI = APIContext.createAPI(SessionAPI.class);
+            Call<SessionPostData> call = sessionAPI.post(new LoginData(data.email, data.password));
+
+            APIContext.makeCall(view, call, session -> {
+                APIContext.login(this, session.session);
+                APIContext.spawnActivity(this, MainActivity.class);
+            }).call();
         }).call();
     }
 

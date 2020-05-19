@@ -1,5 +1,6 @@
 package com.example.ushopping;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -36,9 +37,7 @@ import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
 
-    Retrofit api;
     ListAdapter listAdapter;
-    UUID authorisation = UUID.fromString("f7eb77b0-009e-4a4a-8c5e-788df73f3153");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
         ListView listView = findViewById(R.id.listView);
         FloatingActionButton btn_addList = findViewById(R.id.btn_addList);
-        btn_addList.hide();
-        api = APIContext.getContext();
 
         listAdapter = new ListAdapter(this, R.layout.adapter_main_list, new ArrayList<ProductListData>());
         listView.setAdapter(listAdapter);
@@ -64,11 +61,18 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        refreshList();
-
         btn_addList.setOnClickListener(view -> {
             productDialogBuilder(view).show();
         });
+
+        setSpinner(true);
+        APIContext.updateSession(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (APIContext.isLogin(this)) refreshList();
     }
 
     AlertDialog.Builder productDialogBuilder(View view) {
@@ -80,10 +84,11 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Add", (dialog, which) -> {
             String title = input.getText().toString();
             TitleData lsd = new TitleData(title);
-            ProductListsAPI productList = api.create(ProductListsAPI.class);
-            Call<ProductListData> listCall = productList.post(lsd, authorisation);
 
-            APICall.makeCall(view, listCall, data -> {
+            ProductListsAPI productList = APIContext.createAPI(ProductListsAPI.class);
+            Call<ProductListData> listCall = productList.post(lsd, APIContext.getSession(this));
+
+            APIContext.makeCall(view, listCall, data -> {
                 Snackbar.make(view, "Created list: " + data.title, Snackbar.LENGTH_LONG).show();
 
                 ProductListData create = new ProductListData(data.id, data.title, data.createdAt);
@@ -96,27 +101,37 @@ public class MainActivity extends AppCompatActivity {
         return builder;
     }
 
+    void setSpinner(boolean active) {
+        ProgressBar waiting = findViewById(R.id.waiting);
+        FloatingActionButton btn_addList = findViewById(R.id.btn_addList);
+
+        if (active) {
+            waiting.setVisibility(View.VISIBLE);
+            btn_addList.hide();
+            listAdapter.clear();
+        } else {
+            waiting.setVisibility(View.GONE);
+            btn_addList.show();
+        }
+    }
+
     void refreshList() {
         View view = findViewById(R.id.listView);
-        listAdapter.clear();
-
         ProgressBar waiting = findViewById(R.id.waiting);
-        waiting.setVisibility(View.VISIBLE);
-
         FloatingActionButton btn_addList = findViewById(R.id.btn_addList);
-        btn_addList.hide();
 
-        ProductListsAPI productList = api.create(ProductListsAPI.class);
-        Call<List<ProductListData>> listCall = productList.getAll(authorisation);
+        ProductListsAPI productList = APIContext.createAPI(ProductListsAPI.class);
+        Call<List<ProductListData>> listCall = productList.getAll(APIContext.getSession(this));
 
-        APICall.makeCall(view, listCall, data -> {
+        APIContext.makeCall(view, listCall, data -> {
+            listAdapter.clear();
+
             for (ProductListData list : data) {
                 listAdapter.add(list);
                 listAdapter.sort((a, b) -> b.createdAt.compareTo(a.createdAt));
             }
 
-            waiting.setVisibility(View.GONE);
-            btn_addList.show();
+            setSpinner(false);
 
         }).exception(t -> {
             Log.wtf("RETROFIT", t);
@@ -137,11 +152,15 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
+            setSpinner(true);
             refreshList();
             return true;
         }
 
         if (id == R.id.action_logout) {
+            APIContext.logout(this);
+            APIContext.spawnActivity(this, LoginActivity.class);
+            refreshList();
             return true;
         }
 
