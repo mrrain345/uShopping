@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,12 +19,14 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.ushopping.api.APIContext;
 import com.example.ushopping.api.ProductListsAPI;
+import com.example.ushopping.api.ProductsAPI;
 import com.example.ushopping.data.ProductData;
 import com.example.ushopping.data.ProductListData;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import retrofit2.Call;
@@ -32,13 +35,15 @@ public class ProductListActivity extends AppCompatActivity {
 
     ListView productsListView;
     com.example.ushopping.ProductListAdapter productListAdapter;
+    UUID listId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
 
         Bundle extras = getIntent().getExtras();
-        UUID id = UUID.fromString(extras.getString("list_id"));
+        listId = UUID.fromString(extras.getString("list_id"));
         String title = extras.getString("list_title");
         Date created_at = new Date(extras.getLong("list_date"));
 
@@ -54,9 +59,6 @@ public class ProductListActivity extends AppCompatActivity {
 
         productListAdapter = new com.example.ushopping.ProductListAdapter(this, R.layout.adapter_product, new ArrayList<ProductData>());
         productsListView.setAdapter(productListAdapter);
-        productListAdapter.add(new ProductData("Młode ziemniaczki",5));
-        productListAdapter.add(new ProductData("Ogórek gruntowy",3));
-        productListAdapter.add(new ProductData("Ananas w puszce",10));
 
 
 
@@ -65,6 +67,38 @@ public class ProductListActivity extends AppCompatActivity {
         add_product.setOnClickListener(view ->  {
             productDialogBuilder(view).show();
         });
+
+        loadProducts();
+        setSpinner(true);
+    }
+
+    void setSpinner(boolean active) {
+        ProgressBar waiting = findViewById(R.id.waiting);
+        FloatingActionButton btn_addList = findViewById(R.id.btn_addproduct);
+
+        if (active) {
+            waiting.setVisibility(View.VISIBLE);
+            btn_addList.hide();
+            productListAdapter.clear();
+        } else {
+            waiting.setVisibility(View.GONE);
+            btn_addList.show();
+        }
+    }
+
+    public void loadProducts(){
+
+        View view = findViewById(R.id.lv_addedproduct);
+        ProductsAPI productList = APIContext.createAPI(ProductsAPI.class);
+        Call<List<ProductData>> listCall = productList.get(listId, APIContext.getSession(this));
+
+        APIContext.makeCall(view, listCall, data -> {
+            productListAdapter.clear();
+            productListAdapter.addAll(data);
+            setSpinner(false);
+        }).call();
+
+
     }
 
     public AlertDialog.Builder productDialogBuilder(View view) {
@@ -90,8 +124,14 @@ public class ProductListActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Add", (dialog, which) -> {
             // TODO: add product to list
-            productListAdapter.add(new ProductData(name.getText().toString(), Integer.parseInt(count.getText().toString())));
 
+            ProductData productData = new ProductData(name.getText().toString(), Integer.parseInt(count.getText().toString()));
+            ProductsAPI api = APIContext.createAPI(ProductsAPI.class);
+            Call<ProductData> call = api.post(listId, productData, APIContext.getSession(this));
+
+            APIContext.makeCall(view, call, data -> {
+                productListAdapter.insert(data, 0);
+            }).call();
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> {
             finish();
