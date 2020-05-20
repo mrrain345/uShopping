@@ -3,7 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="colorToolbar">#283CC1</color>
+    <color name="colorGradientStart">#585859</color>
+    <color name="colorGradientEnd">#0E25BA</color>
 
-    <color name="colorButtonPrimary">#03A9F4</color>
-    <color name="colorButtonSecondary">#E1F5FE</color>
+    <color name="colorButtonPrimary">#E91E63</color>
+    <color name="colorButtonSecondary">#7E1221</color>
 </resources>
