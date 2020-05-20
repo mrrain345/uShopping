@@ -5,25 +5,13 @@
     android:padding="6dip" >
 
 
-    <ImageButton
-        android:id="@+id/btn_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/firstProductLine"
-        android:layout_alignEnd="@+id/secondProductLine"
-        android:layout_alignBottom="@+id/secondProductLine"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="16dp"
-        android:background="#FFFFFF"
-        app:srcCompat="@drawable/ic_menu_black_24dp" />
-
     <TextView
         android:id="@+id/secondProductLine"
         android:layout_width="fill_parent"
         android:layout_height="26dip"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:clickable="true"
         android:text="Count"
         android:textSize="12sp" />
 
@@ -38,5 +26,15 @@
         android:gravity="center_vertical"
         android:text="Name"
         android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/menu_btn"
+        android:layout_width="41dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/secondProductLine"
+        android:layout_marginEnd="23dp"
+        android:background="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:drawableRight="@drawable/ic_menu_black_24dp" />
 
 </RelativeLayout>

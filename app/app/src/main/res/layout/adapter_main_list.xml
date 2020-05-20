@@ -10,7 +10,6 @@
         android:layout_height="26dip"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/icon"
         android:text="Date"
         android:textSize="12sp" />
 

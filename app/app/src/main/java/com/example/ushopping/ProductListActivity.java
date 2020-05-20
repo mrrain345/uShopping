@@ -1,12 +1,12 @@
 package com.example.ushopping;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -16,12 +16,17 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.ushopping.api.APIContext;
+import com.example.ushopping.api.ProductListsAPI;
 import com.example.ushopping.data.ProductData;
+import com.example.ushopping.data.ProductListData;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
+
+import retrofit2.Call;
 
 public class ProductListActivity extends AppCompatActivity {
 
@@ -31,30 +36,30 @@ public class ProductListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle extras = getIntent().getExtras();
         UUID id = UUID.fromString(extras.getString("list_id"));
         String title = extras.getString("list_title");
         Date created_at = new Date(extras.getLong("list_date"));
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(title);
-
-
 
         productsListView = findViewById(R.id.lv_addedproduct);
         FloatingActionButton add_product = findViewById(R.id.btn_addproduct);
         EditText input_product = new EditText(this);
         EditText input_quantity = new EditText(this);
 
-
-        ImageButton btn_menu = findViewById(R.id.btn_menu);
         productListAdapter = new com.example.ushopping.ProductListAdapter(this, R.layout.adapter_product, new ArrayList<ProductData>());
         productsListView.setAdapter(productListAdapter);
-        productListAdapter.add(new ProductData("abc",1));
-        productListAdapter.add(new ProductData("def",2));
-        productListAdapter.add(new ProductData("ghj",3));
+        productListAdapter.add(new ProductData("Młode ziemniaczki",5));
+        productListAdapter.add(new ProductData("Ogórek gruntowy",3));
+        productListAdapter.add(new ProductData("Ananas w puszce",10));
+
+
+
         // TODO: load products
 
         add_product.setOnClickListener(view ->  {
@@ -62,7 +67,7 @@ public class ProductListActivity extends AppCompatActivity {
         });
     }
 
-    AlertDialog.Builder productDialogBuilder(View view) {
+    public AlertDialog.Builder productDialogBuilder(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add new item");
 
@@ -88,35 +93,54 @@ public class ProductListActivity extends AppCompatActivity {
             productListAdapter.add(new ProductData(name.getText().toString(), Integer.parseInt(count.getText().toString())));
 
         });
-        builder.setNegativeButton("Cancel", (dialog, which) -> {});
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            finish();
+        });
 
         return builder;
     }
 
-    AlertDialog.Builder menuButtonBuilder(View view) {
+    public AlertDialog.Builder rename_builder(View view){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Product options");
+        builder.setTitle("Change list title");
+
         Context context = view.getContext();
 
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
+        EditText rename = new EditText(this);
+        rename.setInputType(InputType.TYPE_CLASS_TEXT);
+        rename.setHint("Enter new title");
 
-        builder
-                .setPositiveButton("Change product name",(dialogInterface, i) -> {
-
-
-                })
-                .setNeutralButton("Change product quantity",(dialogInterface, i) -> {
+        builder.setView(view)
+                .setPositiveButton("Change", (dialogInterface, i) -> {
 
 
                 })
-                .setNegativeButton("Delete product",(dialogInterface, i) -> {
-                    
+                .setNegativeButton("Cancel:",(dialogInterface, i) -> {
+                    finish();
+                })
+                .show();
 
+        return builder;
+    }
+
+    public AlertDialog.Builder delete_builder(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Delete?");
+
+        Context context = view.getContext();
+
+        builder.setView(view)
+                .setPositiveButton("Yes", (dialogInterface, i) -> {
+
+                })
+                .setNegativeButton("No", (dialogInterface, i) -> {
+                    finish();
                 })
                 .show();
         return builder;
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -131,7 +155,8 @@ public class ProductListActivity extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) finish();
 
         if (id == R.id.action_list_rename) {
-            // TODO: rename list
+            rename_builder(productsListView).show();
+
             return true;
         }
 
