@@ -18,14 +18,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/listView" />
 
+    <TextView
+        android:id="@+id/tv_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text=""
+
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ListView
         android:id="@+id/listView"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/listview_corners"
+        android:dividerHeight="3dp"
+        android:footerDividersEnabled="false"
+
+        android:headerDividersEnabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></ListView>
+        app:layout_constraintVertical_bias="1.0">
+        android:background="@drawable/listview_corners"
+
+    </ListView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

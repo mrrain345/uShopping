@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00bcd4</color>
-    <color name="colorPrimaryDark">#33c9dc</color>
+    <color name="colorPrimary">#0968B1</color>
+    <color name="colorPrimaryDark">#01579b</color>
     <color name="colorAccent">#5393ff</color>
     <color name="colorToolbar">#008394</color>
     <color name="colorGradientStart">#585859</color>
     <color name="colorGradientEnd">#0E25BA</color>
 
-    <color name="colorButtonPrimary">#1c54b2</color>
-    <color name="colorButtonSecondary">#2979ff</color>
+    <color name="colorButtonPrimary">#e1f5fe</color>
+    <color name="colorButtonSecondary">#00838f</color>
 </resources>

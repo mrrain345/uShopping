@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".LoginActivity"
     tools:showIn="@layout/activity_product_list">
@@ -22,6 +23,8 @@
         android:id="@+id/lv_addedproduct"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/listview_corners"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
