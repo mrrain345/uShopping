@@ -45,20 +45,19 @@ public class ProductListAdapter extends ArrayAdapter<ProductData> {
     public View getView(int position, View convertView, ViewGroup parent) {
         String name = getItem(position).name;
         Integer count = getItem(position).count;
-        UUID id = getItem(position).Id;
 
-        // TODO: add UUID
+        ProductData product = getItem(position);
+        UUID id = product.id;
+        UUID listId = product.listId;
 
-        //UUID id = getItem(position).Id;
-        UUID listId = getItem(position).listId;
-
-        //Log.d("TESTTAG", "UUID id " + id);
         ProductData list = new ProductData(name, count);
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
 
         TextView tvName= (TextView) convertView.findViewById(com.example.ushopping.R.id.firstProductLine);
         TextView tvCount = (TextView) convertView.findViewById(R.id.secondProductLine);
+
+        View listView = parent.findViewById(R.id.lv_addedproduct);
 
         Button menu_btn = convertView.findViewById(R.id.menu_btn);
         menu_btn.setOnClickListener(view -> {
@@ -74,14 +73,17 @@ public class ProductListAdapter extends ArrayAdapter<ProductData> {
             builder
                     .setPositiveButton("Change product parameters",(dialogInterface, i) -> {
 
-                        ProductData parameters = new ProductData();
-                        ProductsAPI api = APIContext.createAPI(ProductsAPI.class);
-                        Call<ProductData> call = api.patch(listId, id,  getItem(position), APIContext.getSession(getContext()));
+                        // TODO: set proper name and count
+                        ProductData parameters = new ProductData("Test", 1);
 
-                        APIContext.makeCall(view, call, data -> {
-                            Snackbar.make(view, "Updated! <3", Snackbar.LENGTH_LONG);
-                            getItem(position).name = name;
-                            getItem(position).count = count;
+                        ProductsAPI api = APIContext.createAPI(ProductsAPI.class);
+                        Call<ProductData> call = api.patch(listId, id,  parameters, APIContext.getSession(getContext()));
+
+                        APIContext.makeCall(listView, call, data -> {
+                            Snackbar.make(listView, "Updated! <3", Snackbar.LENGTH_LONG);
+                            getItem(position).name = data.name;
+                            getItem(position).count = data.count;
+                            notifyDataSetChanged();
                         }).call();
 
 
