@@ -5,7 +5,7 @@ import android.content.Intent;
 import java.util.UUID;
 
 public class ProductData {
-    public UUID Id;
+    public UUID id;
     public UUID listId;
     public String name;
     public Integer count;
