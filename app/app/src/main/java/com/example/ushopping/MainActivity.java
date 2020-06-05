@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
         ListView listView = findViewById(R.id.listView);
         FloatingActionButton btn_addList = findViewById(R.id.btn_addList);
+
+
+
 
         listAdapter = new ListAdapter(this, R.layout.adapter_main_list, new ArrayList<ProductListData>());
         listView.setAdapter(listAdapter);

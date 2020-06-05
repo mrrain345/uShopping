@@ -4,9 +4,8 @@
     <color name="colorPrimaryDark">#01579b</color>
     <color name="colorAccent">#5393ff</color>
     <color name="colorToolbar">#008394</color>
-    <color name="colorGradientStart">#585859</color>
-    <color name="colorGradientEnd">#0E25BA</color>
-
-    <color name="colorButtonPrimary">#e1f5fe</color>
+    <color name="colorBackgroundDark">#0968B1</color>
+    <color name="colorBackgroundLight">#6097F1</color>
+    <color name="colorButtonPrimary">#62CEFF</color>
     <color name="colorButtonSecondary">#00838f</color>
 </resources>
