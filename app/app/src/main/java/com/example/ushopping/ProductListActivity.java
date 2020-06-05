@@ -34,7 +34,7 @@ import retrofit2.Call;
 public class ProductListActivity extends AppCompatActivity {
 
     ListView productsListView;
-    com.example.ushopping.ProductListAdapter productListAdapter;
+    ProductListAdapter productListAdapter;
     UUID listId;
 
     @Override
@@ -60,16 +60,12 @@ public class ProductListActivity extends AppCompatActivity {
         productListAdapter = new com.example.ushopping.ProductListAdapter(this, R.layout.adapter_product, new ArrayList<ProductData>());
         productsListView.setAdapter(productListAdapter);
 
-
-
-        // TODO: load products
-
-        add_product.setOnClickListener(view ->  {
+        add_product.setOnClickListener(view -> {
             productDialogBuilder(view).show();
         });
 
-        loadProducts();
         setSpinner(true);
+        loadProducts();
     }
 
     void setSpinner(boolean active) {
@@ -97,7 +93,6 @@ public class ProductListActivity extends AppCompatActivity {
             productListAdapter.addAll(data);
             setSpinner(false);
         }).call();
-
 
     }
 
@@ -145,20 +140,19 @@ public class ProductListActivity extends AppCompatActivity {
         builder.setTitle("Change list title");
 
         Context context = view.getContext();
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
 
         EditText rename = new EditText(this);
         rename.setInputType(InputType.TYPE_CLASS_TEXT);
         rename.setHint("Enter new title");
+        layout.addView(rename);
 
-        builder.setView(view)
-                .setPositiveButton("Change", (dialogInterface, i) -> {
+        builder.setView(layout);
 
-
-                })
-                .setNegativeButton("Cancel:",(dialogInterface, i) -> {
-                    finish();
-                })
-                .show();
+        builder.setPositiveButton("Change", (dialogInterface, i) -> {
+            // TODO: Change list name
+        }).setNegativeButton("Cancel", null);
 
         return builder;
     }
@@ -167,16 +161,9 @@ public class ProductListActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Delete?");
 
-        Context context = view.getContext();
-
-        builder.setView(view)
-                .setPositiveButton("Yes", (dialogInterface, i) -> {
-
-                })
-                .setNegativeButton("No", (dialogInterface, i) -> {
-                    finish();
-                })
-                .show();
+        builder.setPositiveButton("Yes", (dialogInterface, i) -> {
+            // TODO: Remove list
+        }).setNegativeButton("Cancel", null);
         return builder;
     }
 
@@ -194,14 +181,19 @@ public class ProductListActivity extends AppCompatActivity {
 
         if (item.getItemId() == android.R.id.home) finish();
 
+        if (id == R.id.action_list_refresh) {
+            setSpinner(true);
+            loadProducts();
+            return true;
+        }
+
         if (id == R.id.action_list_rename) {
             rename_builder(productsListView).show();
-
             return true;
         }
 
         if (id == R.id.action_list_delete) {
-            // TODO: remove list
+            delete_builder(productsListView).show();
             return true;
         }
 

@@ -47,34 +47,34 @@ public class ProductListAdapter extends ArrayAdapter<ProductData> {
 
     @SuppressLint("ShowToast")
     public View getView(int position, View convertView, ViewGroup parent) {
-        String name = getItem(position).name;
-        Integer count = getItem(position).count;
 
         ProductData product = getItem(position);
         UUID id = product.id;
         UUID listId = product.listId;
+        String name = product.name;
+        Integer count = product.count;
 
-        ProductData list = new ProductData(name, count);
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
 
-        TextView tvName= (TextView) convertView.findViewById(com.example.ushopping.R.id.firstProductLine);
+        TextView tvName= (TextView) convertView.findViewById(R.id.firstProductLine);
         TextView tvCount = (TextView) convertView.findViewById(R.id.secondProductLine);
         CheckBox check_box = convertView.findViewById(R.id.checkBox1);
 
+        tvName.setText(name);
+        tvCount.setText(count.toString());
+        check_box.setChecked(product.isPurchased);
 
-        //Todo::
-
-        if(check_box.isChecked()){
-
-
-        }
+        check_box.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // TODO: change isPurchased value
+        });
 
         //ViewAnimationFab.rotateFab(convertView, true);
 
         View listView = parent.findViewById(R.id.lv_addedproduct);
 
         Button menu_btn = convertView.findViewById(R.id.menu_btn);
+        View finalConvertView = convertView;
         menu_btn.setOnClickListener(view -> {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -85,62 +85,60 @@ public class ProductListAdapter extends ArrayAdapter<ProductData> {
             layout.setOrientation(LinearLayout.VERTICAL);
             builder.setView(layout);
 
-            builder
-                    .setPositiveButton("Change product parameters",(dialogInterface, i) -> {
+            builder.setPositiveButton("Change product parameters",(dialogInterface, i) -> {
 
-                        // TODO: set proper name and count
-                        AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext);
+                changeProduct(listView, product, finalConvertView, position);
 
-                        builder2
-                                .setTitle("Change parameters");
+            }).setNegativeButton("Delete product", (dialogInterface, i) -> {
+                ProductsAPI api = APIContext.createAPI(ProductsAPI.class);
+                Call<IdData> call = api.delete(listId, id, APIContext.getSession(context));
 
-                       EditText change_name = new EditText(context);
-                       EditText change_count = new EditText(context);
-                       LinearLayout layout1 = new LinearLayout(context);
-                       layout1.setOrientation(LinearLayout.VERTICAL);
+                APIContext.makeCall(listView, call, data -> {
+                   remove(getItem(position));
+                   notifyDataSetChanged();
+                }).call();
 
-                       change_name.setInputType(InputType.TYPE_CLASS_TEXT);
-                       change_name.setText(tvName.getText());
-                       layout1.addView(change_name);
-
-                       change_count.setInputType(InputType.TYPE_CLASS_NUMBER);
-                       change_count.setText(tvCount.getText());
-                       layout1.addView(change_count);
-
-                       builder2.setPositiveButton("Change", (dialogInterface1, i1) -> {
-
-                           ProductData parameters = new ProductData(change_name.getText().toString(), Integer.parseInt(change_count.getText().toString()));
-                           ProductsAPI api = APIContext.createAPI(ProductsAPI.class);
-                           Call<ProductData> call = api.patch(listId, id,  parameters, APIContext.getSession(getContext()));
-
-                           APIContext.makeCall(listView, call, data -> {
-                               getItem(position).name = data.name;
-                               getItem(position).count = data.count;
-                               notifyDataSetChanged();
-                           }).call();
-                       });
-                       builder2.setView(layout1).show();
-
-                    })
-                    .setNegativeButton("Delete product",(dialogInterface, i) -> {
-                        ProductsAPI api = APIContext.createAPI(ProductsAPI.class);
-                        Call<IdData> call = api.delete(listId, id, APIContext.getSession(context));
-
-                        APIContext.makeCall(listView, call, data -> {
-                           remove(getItem(position));
-                           notifyDataSetChanged();
-                        }).call();
-
-                    })
-
-                    .show();
-
-
+            }).show();
         });
 
-        tvName.setText(name);
-        tvCount.setText(count.toString());
-
         return convertView;
+    }
+
+    void changeProduct(View listView, ProductData product, View convertView, int position) {
+        AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext);
+        Context context = listView.getContext();
+
+        TextView tvName= (TextView) convertView.findViewById(com.example.ushopping.R.id.firstProductLine);
+        TextView tvCount = (TextView) convertView.findViewById(R.id.secondProductLine);
+        CheckBox check_box = convertView.findViewById(R.id.checkBox1);
+
+        builder2.setTitle("Change parameters");
+
+        EditText change_name = new EditText(context);
+        EditText change_count = new EditText(context);
+        LinearLayout layout1 = new LinearLayout(context);
+        layout1.setOrientation(LinearLayout.VERTICAL);
+
+        change_name.setInputType(InputType.TYPE_CLASS_TEXT);
+        change_name.setText(tvName.getText());
+        layout1.addView(change_name);
+
+        change_count.setInputType(InputType.TYPE_CLASS_NUMBER);
+        change_count.setText(tvCount.getText());
+        layout1.addView(change_count);
+
+        builder2.setPositiveButton("Change", (dialogInterface1, i1) -> {
+
+            ProductData parameters = new ProductData(change_name.getText().toString(), Integer.parseInt(change_count.getText().toString()));
+            ProductsAPI api = APIContext.createAPI(ProductsAPI.class);
+            Call<ProductData> call = api.patch(product.listId, product.id,  parameters, APIContext.getSession(getContext()));
+
+            APIContext.makeCall(listView, call, data -> {
+                getItem(position).name = data.name;
+                getItem(position).count = data.count;
+                notifyDataSetChanged();
+            }).call();
+        }).setNegativeButton("Cancel", null);
+        builder2.setView(layout1).show();
     }
 }

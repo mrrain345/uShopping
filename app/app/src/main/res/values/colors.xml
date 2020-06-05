@@ -8,4 +8,5 @@
     <color name="colorBackgroundLight">#6097F1</color>
     <color name="colorButtonPrimary">#62CEFF</color>
     <color name="colorButtonSecondary">#00838f</color>
+    <color name="colorFloatingButton">#2962ff</color>
 </resources>

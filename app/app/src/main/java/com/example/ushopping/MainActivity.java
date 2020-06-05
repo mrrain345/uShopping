@@ -93,10 +93,15 @@ public class MainActivity extends AppCompatActivity {
             Call<ProductListData> listCall = productList.post(lsd, APIContext.getSession(this));
 
             APIContext.makeCall(view, listCall, data -> {
-                Snackbar.make(view, "Created list: " + data.title, Snackbar.LENGTH_LONG).show();
 
-                ProductListData create = new ProductListData(data.id, data.title, data.createdAt);
-                listAdapter.insert(create, 0);
+                ProductListData list = new ProductListData(data.id, data.title, data.createdAt);
+                listAdapter.insert(list, 0);
+
+                Intent intent = new Intent(MainActivity.this, ProductListActivity.class);
+                intent.putExtra("list_id", list.id.toString());
+                intent.putExtra("list_title", list.title);
+                intent.putExtra("list_date", list.createdAt.getTime());
+                startActivity(intent);
 
             }).call();
         });

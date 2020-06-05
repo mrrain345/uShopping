@@ -79,7 +79,7 @@ namespace uShopping.Models
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasColumnName("title")
-                    .HasColumnType("varchar(800)")
+                    .HasColumnType("varchar(80)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_general_ci");
             });

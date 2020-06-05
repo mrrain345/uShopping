@@ -6,6 +6,7 @@
 
     <string name="action_refresh">Refresh</string>
     <string name="action_logout">Log out</string>
+    <string name="action_list_refresh">Refresh</string>
     <string name="action_list_rename">Rename</string>
     <string name="action_list_delete">Delete</string>
 </resources>
