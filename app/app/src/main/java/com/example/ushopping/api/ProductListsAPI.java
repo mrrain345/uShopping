@@ -43,7 +43,7 @@ public interface ProductListsAPI {
     );
 
     @DELETE("/lists/{id}")
-    Call<IdData> patch(
+    Call<IdData> delete(
             @Path("id") UUID id,
             @Header("Authorization") UUID authorization
     );

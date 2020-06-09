@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.ushopping.api.APIContext;
 import com.example.ushopping.api.ProductListsAPI;
 import com.example.ushopping.api.ProductsAPI;
+import com.example.ushopping.data.IdData;
 import com.example.ushopping.data.ProductData;
 import com.example.ushopping.data.ProductListData;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -36,6 +37,7 @@ public class ProductListActivity extends AppCompatActivity {
     ListView productsListView;
     ProductListAdapter productListAdapter;
     UUID listId;
+    Date created_at;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,7 @@ public class ProductListActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         listId = UUID.fromString(extras.getString("list_id"));
         String title = extras.getString("list_title");
-        Date created_at = new Date(extras.getLong("list_date"));
+        created_at = new Date(extras.getLong("list_date"));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,7 +59,7 @@ public class ProductListActivity extends AppCompatActivity {
         EditText input_product = new EditText(this);
         EditText input_quantity = new EditText(this);
 
-        productListAdapter = new com.example.ushopping.ProductListAdapter(this, R.layout.adapter_product, new ArrayList<ProductData>());
+        productListAdapter = new ProductListAdapter(this, R.layout.adapter_product, new ArrayList<ProductData>());
         productsListView.setAdapter(productListAdapter);
 
         add_product.setOnClickListener(view -> {
@@ -83,7 +85,6 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     public void loadProducts(){
-
         View view = findViewById(R.id.lv_addedproduct);
         ProductsAPI productList = APIContext.createAPI(ProductsAPI.class);
         Call<List<ProductData>> listCall = productList.get(listId, APIContext.getSession(this));
@@ -118,14 +119,12 @@ public class ProductListActivity extends AppCompatActivity {
         builder.setView(layout);
 
         builder.setPositiveButton("Add", (dialog, which) -> {
-            // TODO: add product to list
-
             ProductData productData = new ProductData(name.getText().toString(), Integer.parseInt(count.getText().toString()));
             ProductsAPI api = APIContext.createAPI(ProductsAPI.class);
             Call<ProductData> call = api.post(listId, productData, APIContext.getSession(this));
 
             APIContext.makeCall(view, call, data -> {
-                productListAdapter.insert(data, 0);
+                productListAdapter.add(data);
             }).call();
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> {
@@ -151,7 +150,14 @@ public class ProductListActivity extends AppCompatActivity {
         builder.setView(layout);
 
         builder.setPositiveButton("Change", (dialogInterface, i) -> {
-            // TODO: Change list name
+            ProductListData productListData = new ProductListData(listId, rename.getText().toString(), created_at);
+            ProductListsAPI api = APIContext.createAPI(ProductListsAPI.class);
+            Call<ProductListData> call = api.patch(listId, productListData, APIContext.getSession(this));
+
+            APIContext.makeCall(view, call, data -> {
+                getSupportActionBar().setTitle(data.title);
+            }).call();
+
         }).setNegativeButton("Cancel", null);
 
         return builder;
@@ -162,12 +168,15 @@ public class ProductListActivity extends AppCompatActivity {
         builder.setTitle("Delete?");
 
         builder.setPositiveButton("Yes", (dialogInterface, i) -> {
-            // TODO: Remove list
+            ProductListsAPI api = APIContext.createAPI(ProductListsAPI.class);
+            Call<IdData> call = api.delete(listId, APIContext.getSession(this));
+
+            APIContext.makeCall(view, call, data -> {
+                finish();
+            }).call();
         }).setNegativeButton("Cancel", null);
         return builder;
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

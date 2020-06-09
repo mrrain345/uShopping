@@ -17,4 +17,10 @@ public class ProductData {
         this.count = count;
     }
 
+    public ProductData(UUID listId, UUID id, boolean isPurchased) {
+        this.listId = listId;
+        this.id = id;
+        this.isPurchased = isPurchased;
+    }
+
 }

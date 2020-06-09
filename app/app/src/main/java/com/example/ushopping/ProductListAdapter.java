@@ -37,8 +37,6 @@ public class ProductListAdapter extends ArrayAdapter<ProductData> {
     private Context mContext;
     int mResource;
 
-
-
     public ProductListAdapter(Context context, int resource, ArrayList<ProductData> objects){
         super(context, resource, objects);
         mContext = context;
@@ -66,7 +64,12 @@ public class ProductListAdapter extends ArrayAdapter<ProductData> {
         check_box.setChecked(product.isPurchased);
 
         check_box.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // TODO: change isPurchased value
+            ProductData productData = new ProductData(listId, id, isChecked);
+            ProductsAPI api = APIContext.createAPI(ProductsAPI.class);
+            Call<ProductData> call = api.patch(listId, id, productData, APIContext.getSession(getContext()));
+            APIContext.makeCall(parent.getRootView(), call, data -> {
+                getItem(position).isPurchased = data.isPurchased;
+            }).call();
         });
 
         //ViewAnimationFab.rotateFab(convertView, true);

@@ -18,7 +18,7 @@ namespace uShopping.Controllers {
         var productList = user.GetProductList(listId);
         if (productList == null) NotFound();
 
-        var products = productList.Products.Select(p => new ProductData(p));
+        var products = productList.Products.OrderBy(p => p.Name).Select(p => new ProductData(p));
         return Ok(products);
     }
 

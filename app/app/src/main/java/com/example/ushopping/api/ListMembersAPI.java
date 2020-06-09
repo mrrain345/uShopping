@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -24,6 +25,13 @@ public interface ListMembersAPI {
     Call<UserData> post(
             @Path("listId") UUID listId,
             @Body UserData data,
+            @Header("Authorization") UUID authorization
+    );
+
+    @DELETE("/lists/{listId}/users/{userId}")
+    Call<UserData> delete(
+            @Path("listId") UUID listId,
+            @Path("userId") UUID userId,
             @Header("Authorization") UUID authorization
     );
 }
