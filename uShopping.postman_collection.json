@@ -1,0 +1,760 @@
+{
+	"info": {
+		"_postman_id": "1f1a4cd6-8873-4515-a9f1-9a19d96d9927",
+		"name": "uShopping",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"item": [
+				{
+					"name": "User registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e56d1831-2c49-467a-ade3-b277815f1d82",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Username\": \"M0onek\",\n\t\"Email\": \"losowyCiagZnakow@gmail.com\",\n\t\"Password\": \"MojePrawdziweHasloKtoreUzywamWszedzie\",\n\t\"ConfirmPassword\": \"MojePrawdziweHasloKtoreUzywamWszedzie\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a1b5eb09-6a87-4e5c-9bfb-01bcace8330f",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"pm.environment.set(\"authorization\", jsonData.session);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"mc.rain345@gmail.com\",\n\t\"password\": \"qwerty123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/session",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"session"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bd2ab036-c17f-48ae-ab6d-8fe78ad5ca9c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/session",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"session"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Lists",
+			"item": [
+				{
+					"name": "Post list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d85d10ae-5ec2-443c-b1d2-41430b3769d4",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"pm.environment.set(\"listId\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"title\": \"example title\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/lists",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1da84013-69b3-48e7-9d7b-46f179062817",
+								"exec": [
+									"pm.test(\"Title changed\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.title).to.eql(\"patched example title\");",
+									"});",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"title\": \"patched example title\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8daf7328-23f1-4ec1-b96a-9e32293552dd",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/lists",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6ee17835-7fca-41bc-8365-ec518d57a3cb",
+								"exec": [
+									"var listId = pm.environment.get(\"listId\");",
+									"pm.test(\"Correct ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.eql(listId);",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Post product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "853b5d41-a26e-4cba-ad74-ed6d642186ee",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"pm.environment.set(\"productId\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"tomato\",\n\t\"count\": 9\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}/products",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "acf8068d-57ef-4109-a926-48206446776d",
+								"exec": [
+									"pm.test(\"Product changed\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql(\"banan\");",
+									"    pm.expect(jsonData.count).to.eql(3);",
+									"    pm.expect(jsonData.isPurchased).to.eql(true);",
+									"});",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"banan\",\n\t\"count\": 3,\n\t\"isPurchased\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}/products/{{productId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a4d57e3a-b7c4-4b86-b7a0-dfaf4f26e95f",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}/products",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}",
+								"products"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "List Members",
+			"item": [
+				{
+					"name": "Get list members",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "24c6eab2-9378-40ca-92ac-3c58dafd1ad6",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post list member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8a8475f0-608f-4048-b017-53d77a631ec0",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Email\": \"losowyCiagZnakow@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Delete Requests",
+			"item": [
+				{
+					"name": "Delete product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c53d4291-7ee4-40c2-bee5-86e8b3d44bdc",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.unset(\"productId\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}/products/{{productId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete list member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7072ec7e-390a-4f4c-b433-01d56ed75bd2",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}/users/9a780440-5918-4ab7-bd66-49a69dda0e29",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}",
+								"users",
+								"9a780440-5918-4ab7-bd66-49a69dda0e29"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e0578266-87cc-43bd-b2f5-9d589f6d8f53",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.unset(\"listId\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/lists/{{listId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"lists",
+								"{{listId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Logout",
+			"item": [
+				{
+					"name": "Delete session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c762285a-8645-4837-9617-fa3ee51f60fe",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/session",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"session"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
