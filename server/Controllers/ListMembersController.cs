@@ -48,5 +48,31 @@ namespace uShopping.Controllers {
 
         return new UserData(userToAdd);
     }
+
+    [HttpDelete("{listId}/users/{userId}")]
+    public ActionResult<UserData> DeleteListMember(Guid listId, Guid userId, [FromHeader] Guid authorization) {
+        User user = Session.GetUser(db, authorization);
+        if (user == null) return ErrorData.SessionError();
+
+        var listMember = user.ListMembers.SingleOrDefault(lm => lm.ListId == listId);
+        if (listMember == null) return NotFound();
+
+        var member = db.Users.SingleOrDefault(u => u.Id == userId);
+        if (member == null) return NotFound();
+
+        var listMemberToDelete = member.ListMembers.SingleOrDefault(lm => lm.ListId == listId);
+
+        var productList = listMemberToDelete.ProductList;
+        db.ListMembers.Remove(listMemberToDelete);
+
+        if (productList.ListMembers.Count == 0) {
+            db.Products.RemoveRange(productList.Products);
+            db.ProductLists.Remove(productList);
+        }
+
+        db.SaveChanges();
+
+        return new UserData(member);
+    }
   }
 }
