@@ -26,8 +26,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class APIContext {
 
     private static Retrofit api;
-    private static final String BASE_URL = "http://10.0.2.2:5000";
+    private static final String BASE_URL = "http://shell.ublog.eu:5000"; // "http://10.0.2.2:5000";
     private static UUID session;
+    private static UUID userId;
 
     public static Retrofit getContext() {
         if (api == null) {
@@ -71,6 +72,7 @@ public class APIContext {
             char[] data = new char[(int) file.length()];
             reader.read(data);
             session = UUID.fromString(new String(data));
+            userId = null;
             reader.close();
             return session;
 
@@ -83,6 +85,7 @@ public class APIContext {
 
     public static void login(Context context, UUID session) {
         APIContext.session = session;
+        userId = null;
         File file = new File(context.getFilesDir(), "session");
 
         try {
@@ -97,6 +100,7 @@ public class APIContext {
 
     public static void logout(Context context) {
         APIContext.session = null;
+        userId = null;
         File file = new File(context.getFilesDir(), "session");
         if (file.exists()) file.delete();
     }
@@ -112,8 +116,15 @@ public class APIContext {
         makeCall(null, call, data -> {
             if (!data.active) {
                 spawnActivity(context, LoginActivity.class);
+            } else {
+                userId = data.user.id;
             }
         }).call();
+    }
+
+    public static UUID getUserId(Context context) {
+        if (userId == null) updateSession(context);
+        return userId;
     }
 
     public static void spawnActivity(Context context, Class activity) {

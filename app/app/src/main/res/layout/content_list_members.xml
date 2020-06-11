@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ProductListActivity"
-    tools:showIn="@layout/activity_product_list">
+    tools:context=".ListMembersActivity"
+    tools:showIn="@layout/activity_list_members">
 
     <ProgressBar
         android:id="@+id/waiting"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/lv_addedproduct"
+        android:id="@+id/lv_addmember"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -1,6 +1,7 @@
 package com.example.ushopping;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Menu;
@@ -37,6 +38,7 @@ public class ProductListActivity extends AppCompatActivity {
     ListView productsListView;
     ProductListAdapter productListAdapter;
     UUID listId;
+    String title;
     Date created_at;
 
     @Override
@@ -46,7 +48,7 @@ public class ProductListActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         listId = UUID.fromString(extras.getString("list_id"));
-        String title = extras.getString("list_title");
+        title = extras.getString("list_title");
         created_at = new Date(extras.getLong("list_date"));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -145,6 +147,7 @@ public class ProductListActivity extends AppCompatActivity {
         EditText rename = new EditText(this);
         rename.setInputType(InputType.TYPE_CLASS_TEXT);
         rename.setHint("Enter new title");
+        rename.setText(title);
         layout.addView(rename);
 
         builder.setView(layout);
@@ -178,6 +181,13 @@ public class ProductListActivity extends AppCompatActivity {
         return builder;
     }
 
+    public void list_members() {
+        Intent intent = new Intent(this, ListMembersActivity.class);
+        intent.putExtra("list_id", listId.toString());
+        intent.putExtra("list_title", title);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_product_list, menu);
@@ -199,6 +209,11 @@ public class ProductListActivity extends AppCompatActivity {
         if (id == R.id.action_list_rename) {
             rename_builder(productsListView).show();
             return true;
+        }
+
+        if (id == R.id.action_list_share) {
+            list_members();
+            return  true;
         }
 
         if (id == R.id.action_list_delete) {
